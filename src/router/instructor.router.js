@@ -34,9 +34,8 @@ Irouter.route('/add-course-video')
          }
       ]),
       addVideoTutorials);
- 
-Irouter.route("/add-quiz").post(isTeacher,addQuiz);
 Irouter.route("/thoughtCorse").get(isTeacher,courseCreatedByInstructor);
 Irouter.route("/deletecontent").post(isTeacher,deleteVideoTutorial);
 Irouter.route("/returnVideo").post(isTeacher,returnVideoContent);
+Irouter.route("/add-test").post(isTeacher,addQuiz);
 export {Irouter}

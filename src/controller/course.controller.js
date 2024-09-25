@@ -201,14 +201,6 @@ const uplodetut = async (body,localPath,imageLocalPath,courseId,index) => {
      );
    }
  });
- 
-
-const addQuiz=asynchandlar(async (req,res)=>{
-    const quizdata=req.body;
-    console.log(quizdata)
-
-
-})
 
 const courseCreatedByInstructor=asynchandlar(async (req,res)=>{
      try {
@@ -291,6 +283,48 @@ const deleteVideoTutorial=asynchandlar(async (req,res)=>{
    
    } catch (error) {
       throw new ApiError(404,error)
+   }
+})
+const addQuiz=asynchandlar(async (req,res)=>{
+   try {
+      const user=req.user;
+      const quizdata=req.body?.newquiz;
+      const courseId=req.body.courseId;
+      if(!quizdata){
+         throw new ApiError(404,"data not get ",error);
+      }
+      if(!courseId){
+         throw new ApiError(404,"unvaild credintial not get id");
+      }
+      const isAuthTeacher=await Course.findOne({
+         _id:courseId,
+         instructor:user._id
+      })
+      console.log("isAuther",isAuthTeacher);
+      if(!isAuthTeacher){
+         throw new ApiError(404,"invalid user");
+      }
+      const course=await Course.findOneAndUpdate(
+         {_id:courseId},
+         {
+            $push:{
+               courseQuiz:quizdata
+            }
+         },
+         { new: true }
+      )
+    
+      if(!course){
+         throw new ApiError(404,"course not found");
+      }
+      res.status(200)
+      .json(
+         new ApiResponse(200,course,"","quiz added successfully")
+      )
+   } catch (error) {
+      res.status(500).json(
+         new ApiError(500,"not added",error.message)
+       );
    }
 })
 
