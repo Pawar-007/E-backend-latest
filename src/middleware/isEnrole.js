@@ -12,7 +12,9 @@ const isEnorled=asynchandlar(async(req,res,next)=>{
        if (!token || !courseId) { 
          throw new ApiError(400, "Missing accessToken or courseId");
         }
-        
+        if (token && token.startsWith("Bearer ")) {
+          token = token.slice(8, token.length).trim(); // This line will cause an error
+        }
        const decodeToken= Jwt.verify(token,process.env.REFRESH_TOKEN_SCRIPT);
        
        const user=await UserStudent.findById(decodeToken._id).select("-password -accessToken")

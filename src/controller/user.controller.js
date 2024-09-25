@@ -3,6 +3,7 @@ import ApiError from "../utils/ApiError.js"
 import {UserStudent} from "../model/userStudent.model.js"
 import {ApiResponse} from "../utils/apiResponse.js"
 import { Instructor } from "../model/userInstructor.model.js";
+import { uplodeImage } from "../utils/cloudnary.js";
 const generateAccessAndRefreshToken= async (userId)=>{
    const user = await UserStudent.findById(userId);
    const accessToken=await user.generateAccessToken();
@@ -14,13 +15,16 @@ const generateAccessAndRefreshToken= async (userId)=>{
 }
 const studentRegistration=asynchandlar(async (req,res)=>{
    const {username,lastname,email,password}=req.body;
-   
-   if (
+   const image=req.files && req.files.image && req.files.image[0] ? req.files.image[0].path : null;;
+   console.log(
+      "imagePath",image
+   )
+   if ( 
       [username,lastname, email, password].some((field) => field?.trim() === "")
     ) {
       throw new ApiError(400, "All fields are required")
     }
-   
+
    const exist=await UserStudent.findOne({
       $and:[
          { username: username },
@@ -30,17 +34,21 @@ const studentRegistration=asynchandlar(async (req,res)=>{
    if(exist){
       throw new ApiError(400,"user already exist");
    }
-
+   const setImage=await uplodeImage(image);
+   if(!setImage){
+      throw new ApiError(404,"registration fail");
+   }
    const user=await UserStudent.create({
       username,
       lastname,
       email,
       password,
+      coverImage:setImage.secure_url
    })
    
    const createUser=await UserStudent.findOne(user._id).
    select("-password");
-   return res
+   return res 
    .status(200)
    .json(
       new ApiResponse(200,createUser,"user register successfully")
@@ -50,7 +58,7 @@ const studentRegistration=asynchandlar(async (req,res)=>{
 
 const loginUser=asynchandlar(async (req,res)=>{
    const {username,email,password}=await req.body;
-   
+  
    if (!username || !email){
       throw new ApiError(400,"username or email require")
    }
@@ -90,7 +98,7 @@ const loginUser=asynchandlar(async (req,res)=>{
 })
 
 const logoutUser=asynchandlar(async(req,res)=>{
-     const user= req.user;
+     const user= req.user; 
      if(!user){
       throw new ApiError(404,"you are alredy logout");
      }

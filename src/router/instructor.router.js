@@ -6,7 +6,8 @@ import { defineCourse,
          addQuiz,
          courseCreatedByInstructor,
          addVideoTutorials,
-         deleteVideoTutorial } from "../controller/course.controller.js";
+         deleteVideoTutorial, 
+         returnVideoContent} from "../controller/course.controller.js";
 import {uplodeVideoTuto} from "../controller/courseContent.controller.js"
 import {userAuthorise} from "../middleware/auth.middleware.js"
 const Irouter=Router();
@@ -36,5 +37,6 @@ Irouter.route('/add-course-video')
  
 Irouter.route("/add-quiz").post(isTeacher,addQuiz);
 Irouter.route("/thoughtCorse").get(isTeacher,courseCreatedByInstructor);
-Irouter.route("/deletecontent").post(isTeacher,deleteVideoTutorial)
+Irouter.route("/deletecontent").post(isTeacher,deleteVideoTutorial);
+Irouter.route("/returnVideo").post(isTeacher,returnVideoContent);
 export {Irouter}

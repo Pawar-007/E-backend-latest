@@ -65,9 +65,7 @@ const defineCourse=asynchandlar(async (req,res)=>{
 
 const returnVideoContent=asynchandlar(async(req,res)=>{
    const user=req.user;
-   const courseId= req.courseId; 
-   console.log("user",user)
-   console.log("courseid",courseId);
+   const courseId= req.courseId || req.body.courseID; 
    if(!user){
       throw new ApiError(404,"user is not define");
    }
@@ -130,15 +128,6 @@ const presentCourses=asynchandlar(async (req,res)=>{
 })
 const uplodetut = async (body,localPath,imageLocalPath,courseId,index) => {
    try {
-   console.log(
-      {
-         "body":body,
-         "localpath":localPath,
-         "imagelocalpath":imageLocalPath,
-         "index":index
-      }
-   )
-
    const description=body;
    const uplodeVideo = await uplodeVideoOnCloudnary(localPath.path);
    const uplodeimage=await uplodeImage(imageLocalPath.path);
@@ -181,7 +170,7 @@ const uplodetut = async (body,localPath,imageLocalPath,courseId,index) => {
      throw new ApiError(400, "No video files uploaded");
    }
  
-   const localPath = video // Assuming `video.video` is an array of file objects
+   const localPath = video 
    const imageLocalPath=image
    // Find the course and validate the instructor
    const courseFind = await Course.findOne({ courseId: courseId, instructor: user._id });
@@ -304,6 +293,7 @@ const deleteVideoTutorial=asynchandlar(async (req,res)=>{
       throw new ApiError(404,error)
    }
 })
+
 
 export 
 {

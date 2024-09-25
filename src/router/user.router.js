@@ -9,17 +9,26 @@ import {uplodeVideoTuto} from "../controller/courseContent.controller.js";
 import {isEnorled} from "../middleware/isEnrole.js"
 import {Enroleuser, deleteEnrolement} from "../controller/enrolement.controller.js"
 const router=Router();
-
+    
 router.route('/uplodeimage').post(
    uplode.fields([
       {
          name:"image",
          maxcount:1
-      }
+      } 
    ]),
    videouplode);
 
-router.route('/studentRegistration').post(uplode.none(),studentRegistration);
+router.route('/studentRegistration').post(
+     uplode.fields([
+         {
+            name: "image",
+            maxCount: 1
+         }
+      ]),
+      studentRegistration
+   );
+   
 router.route('/loginUser').post(loginUser)
 router.route('/logout').post(userAuthorise,logoutUser);
 // router.route('/userType').post(userAuthorise,defineCourse);
