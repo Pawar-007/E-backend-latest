@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken"
 const userAuthorise=asynchandlar(async (req,res,next)=>{
    try {
       let token= await req.cookies?.refreshToken || req.header("Authorization");
+
       if (!token) {
          throw new ApiError(401, 'Refresh token is not defined');
      }
@@ -27,6 +28,7 @@ const userAuthorise=asynchandlar(async (req,res,next)=>{
       req.user=user;
       next();
    } catch (error) {
+      console.log("token where the data store",req.header("Authorization"))
       throw new ApiError(404,error?.message || "invalid Access token")
       
    }
@@ -39,7 +41,7 @@ const instructorAuthorise=asynchandlar(async (req,res,next)=>{
      }
       const decodeToken = jwt.verify(token,process.env
          .REFRESH_TOKEN_SCRIPT )
-      console.log("decodedtoken",decodeToken);
+      
       const user= await Instructor.findById(decodeToken._id)
       .select("-password -refreshToken");
 

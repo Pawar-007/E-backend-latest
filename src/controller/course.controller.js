@@ -4,8 +4,9 @@ import { Instructor } from "../model/userInstructor.model.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asynchandlar } from "../utils/asynchandler.js";
 import { Content } from "../model/courseContent.model.js";
-import mongoose from "mongoose";
+import { Result } from "../model/result.model.js";
 import { uplodeVideoOnCloudnary,uplodeImage, deleteFromCloudnary } from "../utils/cloudnary.js";
+import mongoose from "mongoose";
 const defineCourse=asynchandlar(async (req,res)=>{
    const user= req.user;
    const {courseName,description,courseId} = req.body;
@@ -90,26 +91,35 @@ const returnVideoContent=asynchandlar(async(req,res)=>{
 
 const deleteCoures=asynchandlar(async (req,res)=>{
    const user=req.user;
-   const {courseName,courseId} = req.body;
+   const {courseName,courseId,courseVideos} = req.body;
 
    if(!courseName || !courseId){
       throw new ApiError(404,"coursename and courseId is required to delete the course")
-   }
+   }  
 
-  const document=await Course.findOneAndDelete({
-     instructor:user._id,
-      courseName:courseName,
-      courseId:courseId
-   })
-    
-   if(!document){
-      throw new ApiError(404,"course is not deleted from cources")
-   }
-
-   return res
-   .status(200)
-   .json(
-      new ApiResponse("200",document,"document is deleted successfully")
+   const course=await Course.findOneAndDelete(
+      {
+         _id:courseId, 
+         instructor:user._id 
+      }
+      );
+   
+     if(!course){
+      throw new ApiError(404,"not found",error.message)
+     }
+   
+   const cloudDelete=await Promise.all(courseVideos.map(async (item) => {
+      let imagePublicKey = publicID(item.coverImage);
+      let videoPublicKey = publicID(item.videolink);
+  
+      const videoDeleted = await deleteFromCloudnary(videoPublicKey, "video");
+      const imageDeleted = await deleteFromCloudnary(imagePublicKey, "image");
+      console.log("seleted videos ",videoDeleted, " ", imageDeleted);
+    }));  
+   return res 
+   .status(200) 
+   .json( 
+      new ApiResponse("200",course,"document is deleted successfully")
    )
 
 })
@@ -181,7 +191,7 @@ const uplodetut = async (body,localPath,imageLocalPath,courseId,index) => {
    if (String(courseFind.instructor) !== String(user._id)) {
      throw new ApiError(400, "User is not the instructor for this course");
    }
- 
+  
     try {
      const createContent = await Promise.all(
        localPath.map(async (item,index) => {
@@ -206,7 +216,7 @@ const courseCreatedByInstructor=asynchandlar(async (req,res)=>{
      try {
       const user=await req.user;
       const instructor=await Instructor.findById(user._id);
-    
+      
       if(!instructor){
          throw new ApiError(500,"instructor is not register")
       }
@@ -214,9 +224,11 @@ const courseCreatedByInstructor=asynchandlar(async (req,res)=>{
       const courses = await Promise.all(userCourses.map(async (item) => {
          return await Course.findById(item.courseId).exec();
        }));
+       const updatedCourses =courses.filter((course) => course !== null);
+      console.log("course",updatedCourses);
 
       return  res.status(200).json(
-         new ApiResponse(200,courses,"thought couces")
+         new ApiResponse(200,updatedCourses,"thought couces")
       );
      } catch (error) {
       console.error('Error retrieving courses:', error);
@@ -262,7 +274,7 @@ const deleteVideoTutorial=asynchandlar(async (req,res)=>{
     }
    const updateCourse=await Course.updateOne(
       {_id:course._id},
-      {
+      { 
          $pull:{
             courseVideos:{
                videolink:url
@@ -328,7 +340,136 @@ const addQuiz=asynchandlar(async (req,res)=>{
    }
 })
 
+const deleteTestFromCourse=asynchandlar(async(req,res)=>{
+   try {
+      const {courseId,testId}=req.body;
+      console.log("courseId,testId",courseId,testId)
+      const user=req.user;
+      console.log("user",user)
+      if(!courseId || !testId){
+         throw new ApiError(404,"No data available at the moment")
+      }
+      const deleteTest=await Course.findOneAndUpdate(
+            {_id:courseId,
+            instructor:user._id},
+            {
+               $pull:{
+                  courseQuiz: { _id: testId }
+               }
+            }
+         )
+         console.log("deleted ",deleteTest);
+      if(!deleteTest){
+         throw new ApiError(404,"test not found")
+      }
 
+      res.status(200)
+      .json(
+         new ApiResponse(200,deleteTest,'',"test remove successfully")
+      ) 
+   } catch (error) {
+      throw new ApiError(404,"not delete test");
+   }
+   })
+
+const addTestScore=asynchandlar(async(req,res)=>{
+   try {
+      console.log(req.body.id);
+      const { selectedOption, id: testId, courseId } = req.body;
+      const userId=req.user._id;
+      // Validate required fields
+      if (!testId || !courseId) {
+          throw new ApiError(404, "Credential error: Missing test or course ID");
+      }
+
+      // Fetch course by ID
+      const course = await Course.findById(courseId);
+      if (!course) {
+          throw new ApiError(404, "Course not found");
+      }
+      // Find the test by ID within the course's quizzes
+      const test =await course.courseQuiz.find((quiz) => quiz._id.toString() === testId);
+     
+      if (!test) {
+          throw new ApiError(404, "Test not found in the specified course");
+      } 
+      const questions=test.questions;
+      let score=0
+      let results = {
+         score: 0,
+         Correct: [],
+         wrong: [],
+     };
+      questions.forEach(questions => {
+         let questionId=questions._id;
+         let correctAnswer=questions.answer.trim();
+         let selecteAnswer=selectedOption[questionId]?.trim();
+         if(correctAnswer === selecteAnswer){
+            score++;
+            results.Correct.push({"question":questions.question,selecteAnswer})
+         }
+         else{
+            results.wrong.push({"question":questions.question,selecteAnswer,correctAnswer})
+         } 
+      });
+       let finalScore=(score/questions.length)*100;
+       results.score=finalScore;
+       
+       let storeResult=await Result.create(
+        {"userId":userId,
+         "courseId":courseId,
+         "quizId":test._id,
+         "Score":results.score,
+         "correctSelected":results.Correct,
+         "wrongSelected":results.wrong
+      }  
+      )
+       if(!storeResult){
+         throw new ApiError(404,"problem in adding result",mongoose.error)
+       }
+       let updateGiveTest=await Course.findOneAndUpdate(
+         { _id: courseId, "courseQuiz._id": test._id }, 
+         {$set: { "courseQuiz.$.isGiven": true } },
+         { new: true } 
+      )
+      console.log("updated",updateGiveTest);
+      if(!updateGiveTest){
+         throw new ApiError(404,"is given not updated")
+      }
+      res.status(200)
+      .json(
+         new ApiResponse(200,storeResult,'',"your score is generated")
+      );
+  } catch (error) {
+      console.error("Error processing test score:", error.message);
+      throw new ApiError(500, "Error processing test score");
+  }
+})
+const getScore=asynchandlar(async (req,res)=>{
+    try {
+      const {quizId}=req.body;
+      const user=req.user;
+      if(!quizId || !user){
+         throw new ApiError("404","invalid credintial");
+      }
+
+      const getscore=await Result.findOne({
+         "quizId":quizId,
+         "userId":user._id
+      });
+      if(!getscore){
+         throw new ApiError(400,"score is not generated");
+      }
+
+      return res.status(200).
+      json(
+         new ApiResponse(200,getScore,"","you obtain score ")
+      )
+    } catch (error) {
+      console.log(error.message);
+      
+    }
+})
 export 
 {
  defineCourse,
@@ -338,5 +479,8 @@ export
  addVideoTutorials,
  addQuiz,
  courseCreatedByInstructor,
- deleteVideoTutorial
+ deleteVideoTutorial,
+ deleteTestFromCourse,
+ addTestScore,
+ getScore
    } 

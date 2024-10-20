@@ -3,19 +3,51 @@ import {Schema , model} from "mongoose"
 const resultSchema=new Schema({
    userId:{
       type:Schema.Types.ObjectId,
-      ref:"UserModel"
+      ref:"UserModel",
+      require:true
    },
    courseId:{
       type:Schema.Types.ObjectId,
-      ref:"Course"
+      ref:"Course",
+      require:true
    },
    quizId:{
       type:Schema.Types.ObjectId,
-      ref:"Quiz"
+      ref:"Quiz",
+      require:true
    },
    Score:{
-      type:String
-   }
+      type:Number,
+      require:true
+   },
+   correctSelected: [
+      {
+          question: {
+              type: String,
+              required: true
+          },
+          selecteAnswer: { 
+            type: String,
+            required: true
+        }
+      }
+  ],
+  wrongSelected: [
+      {
+          question: {
+              type: String,
+              required: true
+          },
+          selecteAnswer: { 
+            type: String,
+            required: true
+        },
+          correctAnswer: {
+              type: String,
+              required: true
+          }
+      }
+  ]
 },{
    timestamps:true
 })

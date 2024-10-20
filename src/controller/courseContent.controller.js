@@ -49,7 +49,7 @@ const uplodeVideoTuto=asynchandlar(async (req,res)=>{
     
     const createContent=await Course.updateOne(
         {_id:courseFind._id},
-        {
+        { 
             $push:{
                 courseVideos:
                     {

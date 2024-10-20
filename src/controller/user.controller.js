@@ -14,45 +14,49 @@ const generateAccessAndRefreshToken= async (userId)=>{
 
 }
 const studentRegistration=asynchandlar(async (req,res)=>{
-   const {username,lastname,email,password}=req.body;
-   const image=req.files && req.files.image && req.files.image[0] ? req.files.image[0].path : null;;
-   console.log(
-      "imagePath",image
-   )
-   if ( 
-      [username,lastname, email, password].some((field) => field?.trim() === "")
-    ) {
-      throw new ApiError(400, "All fields are required")
-    }
-
-   const exist=await UserStudent.findOne({
-      $and:[
-         { username: username },
-         { email: email }
-      ]
-   })
-   if(exist){
-      throw new ApiError(400,"user already exist");
-   }
-   const setImage=await uplodeImage(image);
-   if(!setImage){
-      throw new ApiError(404,"registration fail");
-   }
-   const user=await UserStudent.create({
-      username,
-      lastname,
-      email,
-      password,
-      coverImage:setImage.secure_url
-   })
+   try {
+      const {username,lastname,email,password}=req.body;
+      const image=req.files && req.files.image && req.files.image[0] ? req.files.image[0].path : null;;
+      console.log(
+         "imagePath",image
+      )
+      if ( 
+         [username,lastname, email, password].some((field) => field?.trim() === "")
+       ) {
+         throw new ApiError(400, "All fields are required")
+       }
    
-   const createUser=await UserStudent.findOne(user._id).
-   select("-password");
-   return res 
-   .status(200)
-   .json(
-      new ApiResponse(200,createUser,"user register successfully")
-   )
+      const exist=await UserStudent.findOne({
+         $and:[
+            { username: username },
+            { email: email }
+         ]
+      })
+      if(exist){
+         throw new ApiError(400,"user already exist");
+      }
+      const setImage=await uplodeImage(image);
+      if(!setImage){
+         throw new ApiError(404,"registration fail");
+      }
+      const user=await UserStudent.create({
+         username,
+         lastname,
+         email,
+         password,
+         coverImage:setImage.secure_url
+      })
+      
+      const createUser=await UserStudent.findOne(user._id).
+      select("-password");
+      return res 
+      .status(200)
+      .json(
+         new ApiResponse(200,createUser,"user register successfully")
+      )
+   } catch (error) {
+      throw new ApiError(404,"userNotadded",error);
+   }
     
 })
 
@@ -79,12 +83,13 @@ const loginUser=asynchandlar(async (req,res)=>{
       throw new ApiError(404,"your password is wrong");
    }
    const userlog=await UserStudent.findById(user._id).select("-password -refreshToken -accessToken");
-
+   
    const {accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id);
 
    const Option= {  
       httpOnly:true,
       Secure:true, 
+      maxAge: 7 * 24 * 60 * 60 * 1000
    }
 
    return res

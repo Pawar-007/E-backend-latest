@@ -30,7 +30,6 @@ const isTeacher=asynchandlar(async (req,res,next)=>{
    }
 
    
-   
 })
 
 export {isTeacher}

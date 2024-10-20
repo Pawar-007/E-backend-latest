@@ -7,7 +7,8 @@ const questionSchema=new mongoose.Schema({
     options:[
       {
         type:String,
-        required:true
+        required:true,
+        
       }
     ],
     answer:{
@@ -29,7 +30,11 @@ const quizSchema=new mongoose.Schema({
       type:String
     }
   },
-  questions:[questionSchema]
+  questions:[questionSchema],
+  isGiven: {
+    type: Boolean,
+    default: false 
+  }
 })
 const courseSchema=new mongoose.Schema({
       courseId:{
