@@ -12,13 +12,13 @@ const isScoreGenerated = asynchandlar(async (req, res, next) => {
         if (!userId || !courseId) {
             throw new ApiError(400, "Data missing");
         }
-
+    
         const isTestGiven = await Result.findOne({
             'userId': userId,
             'courseId': courseId,
-            'quizId': testId // Ensure this is correct
-        }).select("-userId -courseId -quizId");
-        console.log(isTestGiven);
+            'quizId': testId 
+        });
+
         if (isTestGiven) {
             return res.status(200).json(
                 new ApiResponse(200, isTestGiven, "", "You have already given this test.")

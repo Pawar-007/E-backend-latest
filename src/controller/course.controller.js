@@ -372,106 +372,105 @@ const deleteTestFromCourse=asynchandlar(async(req,res)=>{
    }
    })
 
-const addTestScore=asynchandlar(async(req,res)=>{
-   try {
-      console.log(req.body.id);
-      const { selectedOption, id: testId, courseId } = req.body;
-      const userId=req.user._id;
-      // Validate required fields
-      if (!testId || !courseId) {
-          throw new ApiError(404, "Credential error: Missing test or course ID");
+   const addTestScore = asynchandlar(async (req, res) => {
+      try {
+          const { selectedOption, id: testId, courseId } = req.body;
+          const userId = req.user._id;
+  
+          // Validate required fields
+          if (!testId || !courseId) {
+              throw new ApiError(400, "Missing required fields: Test ID and Course ID are needed.");
+          }
+  
+          // Fetch course by ID
+          const course = await Course.findById(courseId);
+          if (!course) {
+              throw new ApiError(404, `Course with ID ${courseId} not found. Please check the Course ID and try again.`);
+          }
+  
+          // Find the test by ID within the course's quizzes
+          const test = await course.courseQuiz.find((quiz) => quiz._id.toString() === testId);
+          if (!test) {
+              throw new ApiError(404, `Test with ID ${testId} not found within the specified course. Please verify the Test ID.`);
+          }
+  
+          const questions = test.questions;
+          let score = 0;
+          let results = {
+              score: 0,
+              Correct: [],
+              wrong: [],
+          };
+  
+          // Evaluate the selected answers
+          questions.forEach(questions => {
+              let questionId = questions._id;
+              let correctAnswer = questions.answer.trim();
+              let selecteAnswer = selectedOption[questionId]?.trim();
+              if (correctAnswer === selecteAnswer) {
+                  score++;
+                  results.Correct.push({ "question": questions.question, selecteAnswer });
+              } else {
+                  results.wrong.push({ "question": questions.question,
+                     selecteAnswer: selecteAnswer ? selecteAnswer : "not attempted",
+                     correctAnswer });
+              }
+          });
+  
+          let finalScore = (score / questions.length) * 100;
+          results.score = finalScore;
+  
+          // Save the test result
+          let storeResult = await Result.create({
+              "userId": userId,
+              "courseId": courseId,
+              "quizId": test._id,
+              "Score": results.score,
+              "correctSelected": results.Correct,
+              "wrongSelected": results.wrong
+          });
+  
+          if (!storeResult) {
+              throw new ApiError(500, "Failed to save the test result. Please try again later.");
+          }
+          res.status(200)
+          .json(new ApiResponse(200, storeResult, '', "Your score has been successfully generated."));
+          
+      } catch (error) {
+          if (error instanceof ApiError) {
+              res.status(error.statusCode).json(error);
+          } else {
+              res.status(500).json(new ApiError(500, "An unexpected error occurred while processing the test score. Please try again later."));
+          }
       }
-
-      // Fetch course by ID
-      const course = await Course.findById(courseId);
-      if (!course) {
-          throw new ApiError(404, "Course not found");
-      }
-      // Find the test by ID within the course's quizzes
-      const test =await course.courseQuiz.find((quiz) => quiz._id.toString() === testId);
-     
-      if (!test) {
-          throw new ApiError(404, "Test not found in the specified course");
-      } 
-      const questions=test.questions;
-      let score=0
-      let results = {
-         score: 0,
-         Correct: [],
-         wrong: [],
-     };
-      questions.forEach(questions => {
-         let questionId=questions._id;
-         let correctAnswer=questions.answer.trim();
-         let selecteAnswer=selectedOption[questionId]?.trim();
-         if(correctAnswer === selecteAnswer){
-            score++;
-            results.Correct.push({"question":questions.question,selecteAnswer})
-         }
-         else{
-            results.wrong.push({"question":questions.question,selecteAnswer,correctAnswer})
-         } 
-      });
-       let finalScore=(score/questions.length)*100;
-       results.score=finalScore;
-       
-       let storeResult=await Result.create(
-        {"userId":userId,
-         "courseId":courseId,
-         "quizId":test._id,
-         "Score":results.score,
-         "correctSelected":results.Correct,
-         "wrongSelected":results.wrong
-      }  
-      )
-       if(!storeResult){
-         throw new ApiError(404,"problem in adding result",mongoose.error)
-       }
-       let updateGiveTest=await Course.findOneAndUpdate(
-         { _id: courseId, "courseQuiz._id": test._id }, 
-         {$set: { "courseQuiz.$.isGiven": true } },
-         { new: true } 
-      )
-      console.log("updated",updateGiveTest);
-      if(!updateGiveTest){
-         throw new ApiError(404,"is given not updated")
-      }
-      res.status(200)
-      .json(
-         new ApiResponse(200,storeResult,'',"your score is generated")
-      );
-  } catch (error) {
-      console.error("Error processing test score:", error.message);
-      throw new ApiError(500, "Error processing test score");
-  }
-})
-const getScore=asynchandlar(async (req,res)=>{
+  });
+  
+const getScore=asynchandlar(async (req,res)=>{ 
     try {
-      const {quizId}=req.body;
-      const user=req.user;
-      if(!quizId || !user){
+      const {id,courseId}=req.body;
+      const user=req.user;  
+      if(!id || !user){
          throw new ApiError("404","invalid credintial");
       }
 
       const getscore=await Result.findOne({
-         "quizId":quizId,
-         "userId":user._id
+         "quizId":id,
+         "userId":user._id,
+         'courseId': courseId
       });
       if(!getscore){
-         throw new ApiError(400,"score is not generated");
+         throw new ApiError(400,"score is not generated",error);
       }
-
       return res.status(200).
       json(
-         new ApiResponse(200,getScore,"","you obtain score ")
+         new ApiResponse(200,getscore,"","you obtain score ")
       )
     } catch (error) {
-      console.log(error.message);
-      
+      throw new ApiError(404,error.message,"give test first");
     }
 })
 export 
-{
+{  
  defineCourse,
  returnVideoContent,
  deleteCoures,

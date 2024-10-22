@@ -18,21 +18,19 @@ const Enroleuser=asynchandlar(async(req,res)=>{
    }
 
    const courseId=await req.body?.courseId; 
-   if(!courseId){
+   if(!courseId){ 
       throw new ApiError(404,"provide the courseId");
    }
    const course=await Course.findOne({
-      _id:courseId
+      _id:courseId 
    })
    if(!course){
       throw new ApiError(404,"The requested course does not exist on our platform. Please check the course ID or browse available courses.")
    }
-   
    const allredyEnrole=await Enrolement.findOne({
       courseId:course._id,
-      userId:user._id
+      userId:user._id 
    })
-   
    if(allredyEnrole){
       throw new ApiError(404,"you are allredy enrole in this course")
    }
@@ -40,6 +38,7 @@ const Enroleuser=asynchandlar(async(req,res)=>{
       userId:user._id,
       courseId:course._id
    })
+
    const updateUser=await UserStudent.updateOne(
       {_id:user._id},
       {

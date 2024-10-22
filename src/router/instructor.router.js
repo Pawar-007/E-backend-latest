@@ -9,11 +9,12 @@ import { defineCourse,
          deleteVideoTutorial, 
          returnVideoContent,
          deleteTestFromCourse,
-         deleteCoures} from "../controller/course.controller.js";
+         deleteCoures,
+         getScore} from "../controller/course.controller.js";
 import {uplodeVideoTuto} from "../controller/courseContent.controller.js"
 import {userAuthorise} from "../middleware/auth.middleware.js"
 import { addTestScore } from "../controller/course.controller.js";
-import isScoreGenerated from "../middleware/test.middleware.js";
+
 const Irouter=Router();
 
 Irouter.route('/instructorRegistration').post(userAuthorise,instructorRegistration);
@@ -44,5 +45,6 @@ Irouter.route("/returnVideo").post(isTeacher,returnVideoContent);
 Irouter.route("/add-test").post(isTeacher,addQuiz);
 Irouter.route("/delete-test").post(isTeacher,deleteTestFromCourse);
 Irouter.route("/delete-course").post(isTeacher,deleteCoures);
-Irouter.route("/submit-Test").post(userAuthorise,isScoreGenerated,addTestScore);
+Irouter.route("/submit-Test").post(userAuthorise,addTestScore);
+Irouter.route("/get-score").post(userAuthorise,getScore);
 export {Irouter}

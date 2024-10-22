@@ -23,12 +23,10 @@ const resultSchema=new Schema({
    correctSelected: [
       {
           question: {
-              type: String,
-              required: true
+              type: String
           },
           selecteAnswer: { 
-            type: String,
-            required: true
+            type: String
         }
       }
   ],
@@ -36,11 +34,11 @@ const resultSchema=new Schema({
       {
           question: {
               type: String,
-              required: true
+              require:true
           },
           selecteAnswer: { 
             type: String,
-            required: true
+            require:true
         },
           correctAnswer: {
               type: String,

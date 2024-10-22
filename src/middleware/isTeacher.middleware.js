@@ -25,7 +25,6 @@ const isTeacher=asynchandlar(async (req,res,next)=>{
       req.user=instructor;
       next();
    } catch (error) {
-      console.log("error " ,error);
       next(error);
    }
 

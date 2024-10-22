@@ -41,11 +41,11 @@ const uplodeVideoTuto=asynchandlar(async (req,res)=>{
     }
     
     // const createContent = await Content.create({
-    //     courseId:courseFind._id,
+    //     courseId:courseFind._id, 
     //     contentType:"video",
     //     contentLink:uplodeVideo.secure_url
 
-    // })
+    // })  
     
     const createContent=await Course.updateOne(
         {_id:courseFind._id},
@@ -59,7 +59,6 @@ const uplodeVideoTuto=asynchandlar(async (req,res)=>{
             }
         }
     )
-    console.log(Course)
     return res
     .status(200)
     .json(
