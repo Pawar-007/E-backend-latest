@@ -62,7 +62,7 @@ const studentRegistration=asynchandlar(async (req,res)=>{
 
 const loginUser=asynchandlar(async (req,res)=>{
    const {username,email,password}=await req.body;
-  
+  console.log("body ",req.body);
    if (!username || !email){
       throw new ApiError(400,"username or email require")
    }

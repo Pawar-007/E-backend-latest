@@ -10,11 +10,14 @@ const app=express();
 //    methods: ['GET', 'POST'],
 //    credentials: true, // Correct option name
 //  };
-
 app.use(cros({
    origin:`${process.env.FRONTEND_CROS_ORIGIN}`,
    credentials:true
 }))
+// app.use(cros({
+//    origin:true,
+//    credentials:true
+// }))
 // app.use(cros())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
