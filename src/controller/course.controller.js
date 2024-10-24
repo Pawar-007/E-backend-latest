@@ -10,7 +10,6 @@ import mongoose from "mongoose";
 const defineCourse=asynchandlar(async (req,res)=>{
    const user= req.user;
    const {courseName,description,courseId} = req.body;
-   console.log({courseName,description,courseId})
    console.log("req body",req.body);
    const coverImage=req.files.coverImage[0].path;
    if(!coverImage){
@@ -114,7 +113,6 @@ const deleteCoures=asynchandlar(async (req,res)=>{
   
       const videoDeleted = await deleteFromCloudnary(videoPublicKey, "video");
       const imageDeleted = await deleteFromCloudnary(imagePublicKey, "image");
-      console.log("seleted videos ",videoDeleted, " ", imageDeleted);
     }));  
    return res 
    .status(200) 
@@ -141,11 +139,7 @@ const uplodetut = async (body,localPath,imageLocalPath,courseId,index) => {
    const description=body;
    const uplodeVideo = await uplodeVideoOnCloudnary(localPath.path);
    const uplodeimage=await uplodeImage(imageLocalPath.path);
-   console.log({
-      "video":uplodeVideo.secure_url,
-      "image":uplodeimage.secure_url,
-      "description":body
-   })
+   
      if (!uplodeVideo) {
        throw new ApiError(404, "Document is not uploaded");
      }
@@ -225,7 +219,6 @@ const courseCreatedByInstructor=asynchandlar(async (req,res)=>{
          return await Course.findById(item.courseId).exec();
        }));
        const updatedCourses =courses.filter((course) => course !== null);
-      console.log("course",updatedCourses);
 
       return  res.status(200).json(
          new ApiResponse(200,updatedCourses,"thought couces")
@@ -249,13 +242,13 @@ const deleteVideoTutorial=asynchandlar(async (req,res)=>{
    try {
    const user=req.user;
    const {url,coverImage,courseID}= await req.body;
-   console.log("body",req.body);
+
    if(!url){
       throw new ApiError(404,"path is not define");
    }
    const publicPath=publicID(url);
    const imgPath=publicID(coverImage);
-   console.log("path",publicPath,imgPath);
+
    const course=await Course.findOne({
       courseId:courseID,
       instructor:user._id
@@ -267,8 +260,6 @@ const deleteVideoTutorial=asynchandlar(async (req,res)=>{
 
    const deletedVideo=await deleteFromCloudnary(publicPath,'video');
    const deleteImg=await deleteFromCloudnary(imgPath,'image');
-   console.log("cloud",deletedVideo);
-   console.log("cloud",deleteImg);
    if (deletedVideo.result !== 'ok' && deleteImg.result !== 'ok') {
       throw new ApiError(404, "Video not deleted");
     }
@@ -312,7 +303,6 @@ const addQuiz=asynchandlar(async (req,res)=>{
          _id:courseId,
          instructor:user._id
       })
-      console.log("isAuther",isAuthTeacher);
       if(!isAuthTeacher){
          throw new ApiError(404,"invalid user");
       }
@@ -343,9 +333,7 @@ const addQuiz=asynchandlar(async (req,res)=>{
 const deleteTestFromCourse=asynchandlar(async(req,res)=>{
    try {
       const {courseId,testId}=req.body;
-      console.log("courseId,testId",courseId,testId)
       const user=req.user;
-      console.log("user",user)
       if(!courseId || !testId){
          throw new ApiError(404,"No data available at the moment")
       }
@@ -358,7 +346,6 @@ const deleteTestFromCourse=asynchandlar(async(req,res)=>{
                }
             }
          )
-         console.log("deleted ",deleteTest);
       if(!deleteTest){
          throw new ApiError(404,"test not found")
       }
