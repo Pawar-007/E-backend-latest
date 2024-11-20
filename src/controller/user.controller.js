@@ -17,9 +17,6 @@ const studentRegistration=asynchandlar(async (req,res)=>{
    try {
       const {username,lastname,email,password}=req.body;
       const image=req.files && req.files.image && req.files.image[0] ? req.files.image[0].path : null;;
-      console.log(
-         "imagePath",image
-      )
       if ( 
          [username,lastname, email, password].some((field) => field?.trim() === "")
        ) {
@@ -62,7 +59,6 @@ const studentRegistration=asynchandlar(async (req,res)=>{
 
 const loginUser=asynchandlar(async (req,res)=>{
    const {username,email,password}=await req.body;
-  console.log("body ",req.body);
    if (!username || !email){
       throw new ApiError(400,"username or email require")
    }

@@ -10,7 +10,6 @@ import mongoose from "mongoose";
 const defineCourse=asynchandlar(async (req,res)=>{
    const user= req.user;
    const {courseName,description,courseId} = req.body;
-   console.log("req body",req.body);
    const coverImage=req.files.coverImage[0].path;
    if(!coverImage){
       throw new ApiError(404,"coverImage is require");

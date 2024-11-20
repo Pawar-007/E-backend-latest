@@ -7,10 +7,9 @@ const uplodeVideoTuto=asynchandlar(async (req,res)=>{
 
     const courseId=await req.body.courseId;
     const user=await req.user;
-    console.log("user",user); 
-    console.log("body",req.body)
+    
     const localPath=await req.files.video[1].path
-    console.log("video",localPath);
+   
     const imagelocalPath=await req.files
 
     const courseFind = await Course.findOne(
