@@ -29,4 +29,8 @@ app.get("/",(req,res)=>{
    console.log("hello")
    res.send("hello,friends");
 })
+app.get("/intro",(req,res)=>{
+   console.log("introducton")
+   res.send("welcome to flyer");
+})
 export {app};  
