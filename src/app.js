@@ -24,4 +24,9 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use("/api/v1",router);
 app.use("/api2/v2/inst",Irouter);
-export {app};
+
+app.get("/",(req,res)=>{
+   console.log("hello")
+   res.send("hello,friends");
+})
+export {app};  
