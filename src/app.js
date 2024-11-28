@@ -11,9 +11,9 @@ const app=express();
 //    credentials: true, // Correct option name
 //  };
 app.use(cros({
-   origin:`http://localhost:5173`,
-   credentials:true
-}))
+   origin: true,   
+   credentials: true  
+ }))
 //${process.env.FRONTEND_CROS_ORIGIN}
 
 app.use(bodyParser.json());
