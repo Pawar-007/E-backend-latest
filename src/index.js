@@ -16,7 +16,14 @@ app.use(cros({
    origin:`${process.env.FRONTEND_CROS_ORIGIN}`,
    credentials:true
 }))
+
 connectDB()
+.then(()=>{
+   console.log("database connected successfully");
+})
+.catch(()=>{
+   console.log("failed to connect to db");
+})  
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
