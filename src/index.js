@@ -13,7 +13,7 @@ dotenv.config({
 })
 
 app.use(cros({
-   origin:`${process.env.FRONTEND_CROS_ORIGIN}`,
+   origin:`http://localhost:5173`,
    credentials:true
 }))
 
