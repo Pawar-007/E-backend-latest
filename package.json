@@ -7,6 +7,9 @@
   "scripts": {
     "dev": "nodemon src/index.js"
   },
+  "engines": {
+  "node": "20.x"
+  },
   "author": "bhushan",
   "license": "ISC",
   "dependencies": {
