@@ -6,7 +6,6 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv"
 import { connectDB } from "./db/index.js";
-import serverless from 'serverless-http'; 
 const app=express();
 
 dotenv.config({
@@ -46,4 +45,4 @@ app.listen(process.env.PORT || 4000 ,()=>{
    console.log(`server is running at port ${process.env.PORT}`)
 })
 
-export default serverless(app);
+export {app};
