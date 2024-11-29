@@ -5,7 +5,7 @@ import { Irouter } from "./router/instructor.router.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv"
-import { connectDB } from "./db/index.js";
+import { connectDB } from "./db/indexdb.js";
 import serverless from 'serverless-http'; 
 const app=express();
 
