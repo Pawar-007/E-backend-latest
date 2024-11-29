@@ -33,7 +33,7 @@ app.use(cookieParser());
 
 app.get("/",(req,res)=>{
    console.log("hello")
-   res.status(200).send("hello,friends");
+   res.status(200).send("hello,friends. start learning with flyer");
 })
 app.get("/intro",(req,res)=>{
    console.log("introducton")
