@@ -22,7 +22,7 @@ const studentRegistration=asynchandlar(async (req,res)=>{
        ) {
          throw new ApiError(400, "All fields are required")
        }
-   
+      console.log("body ",username,lastname,email,password);
       const exist=await UserStudent.findOne({
          $and:[
             { username: username },
@@ -44,8 +44,8 @@ const studentRegistration=asynchandlar(async (req,res)=>{
          coverImage:setImage.secure_url
       })
       
-      const createUser=await UserStudent.findOne(user._id).
-      select("-password");
+      const createUser=await UserStudent.findOne(user._id);
+      console.log(createUser);
       return res 
       .status(200)
       .json(
