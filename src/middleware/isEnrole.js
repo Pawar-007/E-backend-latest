@@ -8,7 +8,8 @@ const isEnorled=asynchandlar(async(req,res,next)=>{
     try {
        let token=await req.cookies?.refreshToken || req.header("Authorization");
       console.log("token ",token);
-       const courseId=await req.body.courseId;  
+       const courseId=await req.body.courseId; 
+       console.log({"token ":token},{"courseid ":courseId}); 
        if (!token || !courseId) { 
          throw new ApiError(400, "Missing accessToken or courseId");
         }
