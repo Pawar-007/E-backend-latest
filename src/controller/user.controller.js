@@ -18,7 +18,7 @@ const studentRegistration=asynchandlar(async (req,res)=>{
       const {username,lastname,email,password}=req.body;
       const image=req.files && req.files.image && req.files.image[0] ? req.files.image[0].path : null;;
       if ( 
-         [username,lastname, email, password].some((field) => field?.trim() === "")
+         [username, email, password].some((field) => field?.trim() === "")
        ) {
          throw new ApiError(400, "All fields are required")
        }
