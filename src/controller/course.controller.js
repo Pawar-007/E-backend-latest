@@ -313,12 +313,11 @@ const addQuiz=asynchandlar(async (req,res)=>{
             }
          },
          { new: true }
-      )
-    
+      ) 
       if(!course){
          throw new ApiError(404,"course not found");
       }
-      res.status(200)
+      res.status(200) 
       .json(
          new ApiResponse(200,course,"","quiz added successfully")
       )
@@ -362,8 +361,6 @@ const deleteTestFromCourse=asynchandlar(async(req,res)=>{
       try {
           const { selectedOption, id: testId, courseId } = req.body;
           const userId = req.user._id;
-  
-          // Validate required fields
           if (!testId || !courseId) {
               throw new ApiError(400, "Missing required fields: Test ID and Course ID are needed.");
           }

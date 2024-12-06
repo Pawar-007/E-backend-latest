@@ -7,12 +7,11 @@ import Jwt  from "jsonwebtoken";
 const isEnorled=asynchandlar(async(req,res,next)=>{
     try {
        let token=await req.cookies?.refreshToken || req.header("Authorization");
-      console.log("token ",token);
        const courseId=await req.body.courseId; 
-       console.log({"token ":token},{"courseid ":courseId}); 
+    
        if (!token || !courseId) { 
          throw new ApiError(400, "Missing accessToken or courseId");
-        }
+        } 
         if (token && token.startsWith("Bearer ")) {
           token = token.slice(8, token.length).trim(); // This line will cause an error
         }

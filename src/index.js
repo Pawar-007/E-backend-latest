@@ -7,8 +7,8 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv"
 import { connectDB } from "./db/indexdb.js";
 import serverless from 'serverless-http'; 
-const app=express();
 
+const app=express();
 dotenv.config({
    path:"./env"
 })
@@ -41,6 +41,21 @@ app.get("/intro",(req,res)=>{
 })
 app.use("/api/v1",router);
 app.use("/api2/v2/inst",Irouter);
+
+app.use((err, req, res, next) => {
+   if (err instanceof ApiError) {
+      // If the error is an instance of ApiError, return the structured JSON error
+      return res.status(err.statusCode).json(err.toJSON());
+   }
+
+   // Default error handler for unhandled errors
+   console.error("Unexpected Error:", err);
+   return res.status(500).json({
+      statusCode: 500,
+      message: 'Something went wrong, please try again later.'
+   });
+});
+
 
 app.listen(process.env.PORT || 4000 ,()=>{
    console.log(`server is running at port ${process.env.PORT}`)
