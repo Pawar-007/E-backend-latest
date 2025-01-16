@@ -16,7 +16,7 @@ dotenv.config({
 app.use(cors({
    origin: [ 
     process.env.FRONTEND_CROS_ORIGIN,
-    process.env.FRONTEND_CROS_ORIGIN_2,
+    process.env.FRONT_CROS_ORIGIN_2,
   ],
    credentials:true
 }))

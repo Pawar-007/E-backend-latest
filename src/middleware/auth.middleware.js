@@ -17,7 +17,7 @@ const userAuthorise=asynchandlar(async (req,res,next)=>{
    
     const decodeToken = jwt.verify(token,process.env
          .REFRESH_TOKEN_SCRIPT);
-      console.log("decodeToken",decodeToken); 
+      
          if (!decodeToken) {
             throw new ApiError(401, 'Invalid token');
           }
