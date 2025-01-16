@@ -13,7 +13,7 @@ dotenv.config({
    path:"./env"
 })
 
-app.use(cros({
+app.use(cors({
    origin: [
     process.env.FRONTEND_CROS_ORIGIN,
     process.env.FRONTEND_CROS_ORIGIN_2,
