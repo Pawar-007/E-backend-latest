@@ -1,5 +1,5 @@
 import express, { json } from "express";
-import cros from "cors"
+import cors from "cors"
 import {router} from "./router/user.router.js"
 import { Irouter } from "./router/instructor.router.js";
 import bodyParser from "body-parser";
