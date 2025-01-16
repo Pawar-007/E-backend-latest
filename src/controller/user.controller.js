@@ -106,6 +106,7 @@ const logoutUser=asynchandlar(async(req,res)=>{
      const userLogout=await UserStudent.findByIdAndUpdate(user._id,
       {
          $set:{
+            accessToken:undefined,
             referenceToken:undefined
          }
       },{
@@ -117,8 +118,8 @@ const logoutUser=asynchandlar(async(req,res)=>{
       }
       return res
       .status(200)
-      .cookie("accessToken",logoutUser.accessToken,option)
-      .cookie("refreshToken",logoutUser.refreshToken,option)
+      .cookie("accessToken",'',option)
+      .cookie("refreshToken",'',option)
       .json(
          new ApiResponse(200,userLogout,"user logout successfully")
       )

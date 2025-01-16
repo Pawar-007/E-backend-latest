@@ -7,7 +7,7 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv"
 import { connectDB } from "./db/indexdb.js";
 import serverless from 'serverless-http'; 
-
+import ApiError from "./utils/ApiError.js";
 const app=express();
 dotenv.config({
    path:"./env"

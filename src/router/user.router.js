@@ -8,6 +8,7 @@ import {isTeacher} from "../middleware/isTeacher.middleware.js"
 import {uplodeVideoTuto} from "../controller/courseContent.controller.js";
 import {isEnorled} from "../middleware/isEnrole.js"
 import {Enroleuser, deleteEnrolement} from "../controller/enrolement.controller.js"
+import isTokenExpire from "../controller/tokenVerify.controller.js";
 const router=Router();
     
 router.route('/uplodeimage').post(
@@ -29,6 +30,7 @@ router.route('/studentRegistration').post(
       studentRegistration
    );
    
+router.route("/tokenVerify").post(isTokenExpire)
 router.route('/loginUser').post(loginUser)
 router.route('/logout').post(userAuthorise,logoutUser);
 // router.route('/userType').post(userAuthorise,defineCourse);

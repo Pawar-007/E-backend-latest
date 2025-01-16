@@ -10,12 +10,14 @@ const userAuthorise=asynchandlar(async (req,res,next)=>{
       if (!token) {
          throw new ApiError(401, 'Refresh token is not defined');
      }
+
      if (token && token.startsWith("Bearer ")) {
       token = token.slice(8, token.length).trim(); // This line will cause an error
     }
    
-      const decodeToken = jwt.verify(token,process.env
+    const decodeToken = jwt.verify(token,process.env
          .REFRESH_TOKEN_SCRIPT);
+      console.log("decodeToken",decodeToken); 
          if (!decodeToken) {
             throw new ApiError(401, 'Invalid token');
           }
