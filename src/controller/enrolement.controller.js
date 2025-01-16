@@ -55,7 +55,7 @@ const Enroleuser=asynchandlar(async(req,res)=>{
    return res
    .status(200)
    .json(
-      new ApiResponse(200,Enroleuser,`you successfully enrole for ${course.courseName}`)
+      new ApiResponse(200,Enroleuser,"",`you successfully enrole for ${course.courseName}`)
    )
 })
 
