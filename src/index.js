@@ -14,7 +14,10 @@ dotenv.config({
 })
 
 app.use(cros({
-   origin:`${process.env.FRONTEND_CROS_ORIGIN}`,
+   origin: [
+    process.env.FRONTEND_CROS_ORIGIN,
+    process.env.FRONTEND_CROS_ORIGIN_2
+  ],
    credentials:true
 }))
 
