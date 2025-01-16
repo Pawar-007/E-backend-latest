@@ -17,7 +17,6 @@ app.use(cors({
    origin: [
     process.env.FRONTEND_CROS_ORIGIN,
     process.env.FRONTEND_CROS_ORIGIN_2,
-    "http://localhost:5173/"
   ],
    credentials:true
 }))
